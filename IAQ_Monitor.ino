@@ -78,14 +78,17 @@ Label lblStatusText = Label(10, 85, (char *)"", Arial_14);
 NumericUpDown numTempOffset = NumericUpDown(10, 10, 100, 40, -10, 10, &numTempOffset_onClickHandler);
 Label lblTempOffset = Label(115, 23, (char *)"Temp. offset", Arial_14);
 CheckBox cbDarkMode = CheckBox(10, 70, (char *)"Enable darkmode", &cbDarkMode_onClickHandler);
+CheckBox cbFahrenheit = CheckBox(10, 100, (char *)"Temperature in Fahrenheit", &cbFahrenheit_onClickHandler);
 
-// OmniControls
+/*
+ * OmniControls
+ */
 Button btnMain = Button(10, 210, 100, 30, (char *)"Main", &btnMain_onClickHandler);
 
 void setup() {
   // Init serial and wire
   Serial.begin(9600);
-  // Uncomment these to use alternate pins (default: 19, 18)
+  // Uncomment these to use alternate wire pins (default = 19, 18)
   // Wire.setSCL(16);
   // Wire.setSDA(17);
   Wire.begin();
@@ -150,7 +153,11 @@ void loop(void) {
     lblIAQtext.setText(getIAQtext(iaqSensor.iaq));
     lblCO2value.setText(iaqSensor.co2Equivalent);
     lblVOCvalue.setText(iaqSensor.breathVocEquivalent, 4, 1);
-    lblTEMPvalue.setText(iaqSensor.temperature, 4, 1);
+    if(cbFahrenheit.checked){
+      lblTEMPvalue.setText(calcF(iaqSensor.temperature), 4, 1);
+    }else{
+      lblTEMPvalue.setText(iaqSensor.temperature, 4, 1);
+    }
     lblRHvalue.setText(iaqSensor.humidity, 5, 1);
     lblIaqAccuracyValue.setText(iaqSensor.iaqAccuracy);
     lblIaqAccuracyText.setText(getIaqAccuracyText(iaqSensor.iaqAccuracy));
@@ -184,14 +191,14 @@ void checkIaqSensorStatus(void){
     }
   }else if (iaqSensor.bme680Status != BME680_OK) {
     if (iaqSensor.bme680Status < BME680_OK) {
-      output = "BME680 error code : " + String(iaqSensor.bme680Status);
+      output = "BME68x error code : " + String(iaqSensor.bme680Status);
       Serial.println(output);
     } else {
-      output = "BME680 warning code : " + String(iaqSensor.bme680Status);
+      output = "BME68x warning code : " + String(iaqSensor.bme680Status);
       Serial.println(output);
     }
   } else {
-    output = "BSEC and BME680 OK";
+    output = "BSEC and BME68x OK";
     Serial.println(output);
   }
 }
@@ -259,6 +266,9 @@ char* getIaqAccuracyText(int iav){
   else return (char*)"Invalid value";
 }
 
+float calcF(float C){
+  return C * 1.8f + 32.0f;
+}
 /*
  * ui screens
 */
@@ -310,6 +320,7 @@ void getSettingsScreen(){
   ui.addControl(&numTempOffset);
   ui.addControl(&lblTempOffset);
   ui.addControl(&cbDarkMode);
+  ui.addControl(&cbFahrenheit);
   ui.addControl(&btnMain);
 }
 
@@ -332,7 +343,14 @@ void numTempOffset_onClickHandler() {
   iaqSensor.setTemperatureOffset(numTempOffset.getValue());
 }
 
-void cbDarkMode_onClickHandler()
-{
+void cbDarkMode_onClickHandler() {
   ui.enableDarkmode(cbDarkMode.checked);
+}
+
+void cbFahrenheit_onClickHandler() {
+  if(cbFahrenheit.checked){
+    lblTEMPc.setText("*F");
+  }else{
+    lblTEMPc.setText("*C");
+  }
 }
