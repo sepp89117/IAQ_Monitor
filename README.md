@@ -1,6 +1,8 @@
 # IAQ_Monitor
 IAQ Monitor (traffic light) with Teensy 4, BME68x sensor and ILI9341 LCD
 
+<img src="IAQ-IMG.jpg">
+
 Approximate cost of the project: 70 US-Dollar or 60 Euro
 
 # Features
