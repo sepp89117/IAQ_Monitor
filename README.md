@@ -28,6 +28,7 @@ The values are shown in color depending on their level of concern. It is recomme
 - Set temperature offset for BME68x
 - Enable/disable darkmode for ui
 - Switch between Celsius and Fahrenheit
+- Calibrate touch
 
 <b>Status display</b>
 - Shows iaqAccuracy from BME68x
