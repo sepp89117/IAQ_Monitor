@@ -17,6 +17,13 @@ Approximate cost of the project: 70 US-Dollar or 60 Euro
 
 The values are shown in color depending on their level of concern. It is recommended to ventilate when the IAQ is red.
 
+<b>More values:</b>
+- Pressure [hPa]
+- Altitude [m]
+- Absolute humidity [g/m³]
+- Dewpoint [°C or Fahrenheit]
+- Air density [kg/m³]
+
 <b>Settings:</b>
 - Set temperature offset for BME68x
 - Enable/disable darkmode for ui
