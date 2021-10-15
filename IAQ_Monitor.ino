@@ -174,15 +174,16 @@ void loop(void) {
     lblVOCvalue.setText(iaqSensor.breathVocEquivalent, 4, 1);
     if (cbFahrenheit.checked) {
       lblTEMPvalue.setText(calcF(iaqSensor.temperature), 4, 1);
+      lblDewpointVal.setText(calcF(getDp100(iaqSensor.temperature, iaqSensor.humidity)), 5, 2);
     } else {
       lblTEMPvalue.setText(iaqSensor.temperature, 4, 1);
+      lblDewpointVal.setText(getDp100(iaqSensor.temperature, iaqSensor.humidity), 5, 2);
     }
     lblRHvalue.setText(iaqSensor.humidity, 5, 1);
 
     lblPressureVal.setText(iaqSensor.pressure / 100.0f, 7, 2);
     lblAltitudeVal.setText(getAltitude(iaqSensor.pressure), 7, 2);
     lblAHVal.setText(getAH(iaqSensor.temperature, iaqSensor.humidity), 5, 2);
-    lblDewpointVal.setText(getDp100(iaqSensor.temperature, iaqSensor.humidity), 5, 2);
     lblAirDensityVal.setText(getAirDensity(iaqSensor.temperature, iaqSensor.humidity, iaqSensor.pressure), 4, 2);
     lblPressureVal.foreColor = 0x07E0; //GREEN
     lblAltitudeVal.foreColor = 0x07E0; //GREEN
@@ -436,7 +437,9 @@ void cbDarkMode_onClickHandler() {
 void cbFahrenheit_onClickHandler() {
   if (cbFahrenheit.checked) {
     lblTEMPc.setText((char*)"*F");
+    lblDewpoint.setText((char *)"Dewpoint [*F]:");
   } else {
     lblTEMPc.setText((char*)"*C");
+    lblDewpoint.setText((char *)"Dewpoint [*C]:");
   }
 }
