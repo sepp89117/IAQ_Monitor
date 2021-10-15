@@ -95,6 +95,7 @@ NumericUpDown numTempOffset = NumericUpDown(10, 10, 100, 40, -10, 10, &numTempOf
 Label lblTempOffset = Label(115, 23, (char *)"Temp. offset", Arial_14);
 CheckBox cbDarkMode = CheckBox(10, 70, (char *)"Enable darkmode", &cbDarkMode_onClickHandler);
 CheckBox cbFahrenheit = CheckBox(10, 100, (char *)"Temperature in Fahrenheit", &cbFahrenheit_onClickHandler);
+Button btnCalTouch = Button(10, 130, 140, 30, (char *)"Calibrate touch", &btnCalTouch_onClickHandler);
 
 /*
    OmniControls
@@ -138,9 +139,9 @@ void setup() {
   ts.setRotation(1);
 
   // Set touchscreen calibration in ui for my ILI9341
-  ui.TS_MINX = 470;
-  ui.TS_MINY = 240;
-  ui.TS_MAXX = 3850;
+  ui.TS_MINX = 285;
+  ui.TS_MINY = 280;
+  ui.TS_MAXX = 3700;
   ui.TS_MAXY = 3780;
 
   // Enable darkmode at startup
@@ -404,6 +405,7 @@ void getSettingsScreen() {
   ui.addControl(&lblTempOffset);
   ui.addControl(&cbDarkMode);
   ui.addControl(&cbFahrenheit);
+  ui.addControl(&btnCalTouch);
   ui.addControl(&btnMain);
 }
 
@@ -442,4 +444,9 @@ void cbFahrenheit_onClickHandler() {
     lblTEMPc.setText((char*)"*C");
     lblDewpoint.setText((char *)"Dewpoint [*C]:");
   }
+}
+
+void btnCalTouch_onClickHandler() {
+  ui.calibrateTouch();
+  getSettingsScreen();
 }
