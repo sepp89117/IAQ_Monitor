@@ -1,7 +1,7 @@
 # IAQ_Monitor
 IAQ Monitor (traffic light) with Teensy 4, BME68x sensor and ILI9341 LCD
 
-<img src="IAQ-IMG.jpg">
+<img src="main.jpg">
 
 Approximate cost of the project: 70 US-Dollar or 60 Euro
 
@@ -23,17 +23,20 @@ The values are shown in color depending on their level of concern. It is recomme
 - Absolute humidity [g/m³]
 - Dewpoint [°C or Fahrenheit]
 - Air density [kg/m³]
+<img src="more.jpg">
 
 <b>Settings:</b>
 - Set temperature offset for BME68x
 - Enable/disable darkmode for ui
 - Switch between Celsius and Fahrenheit
 - Calibrate touch
+<img src="settings.jpg">
 
 <b>Status display</b>
 - Shows iaqAccuracy from BME68x
   - Shows evaluation of the iaqAccuracy as text
 - Displays the status of BSEC and BME68x
+<img src="status.jpg">
 
 # Usage
 Install the following libs:
