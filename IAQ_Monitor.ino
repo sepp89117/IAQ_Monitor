@@ -1,7 +1,7 @@
 /*
    IAQ_Monitor
    Autor: Sebastian Balzer
-   Date: 2021-10-15
+   Date: 2021-10-17
 
    Hardware: Teensy 4.0, ILI9341 320x240 TFT with XPT2046 Touch, BME680
 */
@@ -13,6 +13,7 @@
 #include <ili9341_t3n_font_ArialBold.h>
 #include "BUI.h" // [important] include BUI after TFT and touch libraries
 #include "bsec.h"
+#include "images.c"
 
 //Touchscreen config
 #define CS_PIN  8
@@ -63,6 +64,8 @@ Label lblRHp = Label(270, 183, (char *)"%", Arial_14);
 Button btnMore = Button(0, 210, 100, 30, (char *)"More", &btnMore_onClickHandler);
 Button btnStatus = Button(110, 210, 100, 30, (char *)"Status", &btnStatus_onClickHandler);
 Button btnSettings = Button(220, 210, 100, 30, (char *)"Settings", &btnSettings_onClickHandler);
+//Images
+Image imgWarn = Image(264, 1, 48, 48, warn);
 
 /*
    MoreScreenControls
@@ -83,10 +86,10 @@ Label lblAirDensityVal = Label(319, 110, (char *)"0", Arial_14); //185
 /*
    StatusScreenControls
 */
-Label lblIaqAccuracy = Label(10, 10, (char *)"Iaq Accuracy = ", Arial_14);
-Label lblIaqAccuracyValue = Label(140, 10, (char *)"0", Arial_14);
-Label lblIaqAccuracyText = Label(10, 35, (char *)"", Arial_14);
-Label lblStatusText = Label(10, 85, (char *)"", Arial_14);
+Label lblIaqAccuracy = Label(0, 10, (char *)"Iaq Accuracy = ", Arial_14);
+Label lblIaqAccuracyValue = Label(130, 10, (char *)"0", Arial_14);
+Label lblIaqAccuracyText = Label(0, 35, (char *)"", Arial_14);
+Label lblStatusText = Label(0, 160, (char *)"", Arial_14);
 
 /*
    SettingsScreenControls
@@ -151,6 +154,9 @@ void setup() {
   cbDarkMode.checked = true;
   numTempOffset.decimalPlaces = 1;
   numTempOffset.setValue(tempOffset);
+  btnSettings.setImage(26, 26, sett);
+  btnStatus.setImage(26, 26, info);
+  btnMore.setImage(26, 26, more);
   lblIAQvalue.textAlign = ALIGNRIGHT;
   lblCO2value.textAlign = ALIGNRIGHT;
   lblVOCvalue.textAlign = ALIGNRIGHT;
@@ -186,12 +192,7 @@ void loop(void) {
     lblAltitudeVal.setText(getAltitude(iaqSensor.pressure), 7, 2);
     lblAHVal.setText(getAH(iaqSensor.temperature, iaqSensor.humidity), 5, 2);
     lblAirDensityVal.setText(getAirDensity(iaqSensor.temperature, iaqSensor.humidity, iaqSensor.pressure), 4, 2);
-    lblPressureVal.foreColor = 0x07E0; //GREEN
-    lblAltitudeVal.foreColor = 0x07E0; //GREEN
-    lblAHVal.foreColor = 0x07E0; //GREEN
-    lblDewpointVal.foreColor = 0x07E0; //GREEN
-    lblAirDensityVal.foreColor = 0x07E0; //GREEN
-
+    
     lblIaqAccuracyValue.setText(iaqSensor.iaqAccuracy);
     lblIaqAccuracyText.setText(getIaqAccuracyText(iaqSensor.iaqAccuracy));
     lblStatusText.setText(output);
@@ -201,6 +202,9 @@ void loop(void) {
     lblVOCvalue.foreColor = getVOCcolor(iaqSensor.breathVocEquivalent);
     lblTEMPvalue.foreColor = getTEMPcolor(iaqSensor.temperature);
     lblRHvalue.foreColor = getRHcolor(iaqSensor.humidity);
+
+    if(iaqSensor.iaq > 150) imgWarn.visible = true;
+    else imgWarn.visible = false;
   } else {
     checkIaqSensorStatus();
   }
@@ -292,10 +296,10 @@ char* getIAQtext(float iaq) {
 }
 
 char* getIaqAccuracyText(int iav) {
-  if (iav == 0) return (char*)"BME680 calibrates";
-  if (iav == 1) return (char*)"Inaccurate calibration";
-  if (iav == 2) return (char*)"BME680 is recalibrating";
-  if (iav == 3) return (char*)"Calibration successful";
+  if (iav == 0) return (char*)"Stabilization / run-in ongoing";
+  if (iav == 1) return (char*)"Low accuracy,to reach high accuracy(3),please expose sensor once to good air (e.g. outdoor air) and bad air (e.g. box with exhaled breath) for auto-trimming";
+  if (iav == 2) return (char*)"Medium accuracy: auto-trimming ongoing";
+  if (iav == 3) return (char*)"High accuracy";
   else return (char*)"Invalid value";
 }
 
@@ -341,7 +345,7 @@ void getMainScreen() {
   //init before adding controls to a new window
   ui.init();
 
-  //Add lables to ui
+  //Add labels to ui
   ui.addControl(&lblIAQvalue);
   ui.addControl(&lblIAQlvl);
   ui.addControl(&lblIAQlevel);
@@ -364,6 +368,9 @@ void getMainScreen() {
   ui.addControl(&btnMore);
   ui.addControl(&btnStatus);
   ui.addControl(&btnSettings);
+
+  ui.addControl(&imgWarn);
+  imgWarn.visible = false;
 }
 
 void getMoreScreen() {
@@ -382,6 +389,13 @@ void getMoreScreen() {
   ui.addControl(&lblAirDensityVal);
 
   ui.addControl(&btnMain);
+
+  //Colorize labels after adding them to ui
+  lblPressureVal.foreColor = 0x07E0; //GREEN
+  lblAltitudeVal.foreColor = 0x07E0; //GREEN
+  lblAHVal.foreColor = 0x07E0; //GREEN
+  lblDewpointVal.foreColor = 0x07E0; //GREEN
+  lblAirDensityVal.foreColor = 0x07E0; //GREEN
 }
 
 void getStatusScreen() {
@@ -394,6 +408,11 @@ void getStatusScreen() {
   ui.addControl(&lblIaqAccuracyText);
   ui.addControl(&lblStatusText);
   ui.addControl(&btnMain);
+
+  //Colorize labels after adding them to ui
+  lblIaqAccuracyValue.foreColor = 0xFFE0; //YELLOW
+  lblIaqAccuracyText.foreColor = 0xFFE0; //YELLOW
+  lblStatusText.foreColor = 0xFFE0; //YELLOW
 }
 
 void getSettingsScreen() {
